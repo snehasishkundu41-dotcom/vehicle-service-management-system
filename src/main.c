@@ -17,7 +17,7 @@ int main_menu()
     printf("1.Login\n");
     printf("2.Register(users)\n");
     printf("3.Exit\n");
-    printf("------------------------------");
+    printf("------------------------------\n");
     printf("Enter your choice: ");
     scanf("%d", &choice);
 
@@ -63,6 +63,7 @@ void userMenu(){
     while(1){
         printf("\n=============USER MENU==============\n");
         printf("1. View Service History\n");
+        printf("2. Search Vehicle\n");
         printf("3.Logout\n");
         printf("======================================\n");
         printf("Enter choice: ");
@@ -96,6 +97,7 @@ void userMenu(){
 int main()
 {
     welcome_screen();
+    createDefaultAdminIfNeeded();
 
     while (1)
     {
@@ -103,7 +105,7 @@ int main()
 
         switch (choice)
         {
-        case 1:
+        case 1:{
             int role = loginUser();
 
             if(role ==  ROLE_ADMIN){
@@ -117,6 +119,8 @@ int main()
             }
 
             break;
+
+        }
         case 2:
             registerUser();
             break;
