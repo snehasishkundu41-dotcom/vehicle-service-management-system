@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/auth.h"
+#include "../include/ui.h"
 
 #define USERS_FILE "data/users.dat"
 
@@ -9,16 +10,16 @@ void registerUser()
 {
     User u;
     FILE *fp;
-    printf("\n-------Register(User/Staff)------\n");
+    print_header("REGISTER NEW USER");
 
     // take input
-    printf("Enter User ID: ");
+    print_input_prompt("Enter User ID: ");
     scanf("%d", &u.user_id);
 
-    printf("Enter Name: ");
+    print_input_prompt("Enter Name: ");
     scanf(" %39[^\n]", u.name); // reads full line including spaces
 
-    printf("Enter Password: ");
+    print_input_prompt("Enter Password: ");
     scanf(" %19s", u.password); // reads single word password
 
     // set role automatically as user
@@ -29,7 +30,7 @@ void registerUser()
 
     if (fp == NULL)
     {
-        printf("Error: Unable to open users file!\n");
+        print_error("Unable to open users file!");
         return;
     }
 
@@ -38,7 +39,7 @@ void registerUser()
 
     fclose(fp);
 
-    printf("\n user Registered Successfully\n");
+    print_success("User Registered Successfully");
 }
 
 // Now writing function for loginuser()
@@ -51,11 +52,12 @@ int loginUser()
     int id;
     char pass[20];
 
-    printf("\n------------Login-------------\n");
-    printf("Enter User ID: ");
+    print_subheader("LOGIN");
+    
+    print_input_prompt("Enter User ID: ");
     scanf("%d", &id);
 
-    printf("Enter password: ");
+    print_input_prompt("Enter password: ");
     scanf(" %19s", pass);
 
     // open users file in read binary mode
@@ -63,7 +65,7 @@ int loginUser()
 
     if (fp == NULL)
     {
-        printf("Error: users file not found!\n");
+        print_error("Users file not found!");
         return 0;
     }
 
@@ -73,13 +75,16 @@ int loginUser()
         if (u.user_id == id && strcmp(u.password, pass) == 0)
         {
             fclose(fp);
-            printf("\nLogin Successful! Welcome %s\n", u.name);
+            char welcome_msg[100];
+            sprintf(welcome_msg, "Login Successful! Welcome %s", u.name);
+            print_success(welcome_msg);
+            // wait_for_enter(); // Optional: pause to let user see success
             return u.role; // ROLE_ADMIN or ROLE_USER
         }
     }
 
     fclose(fp);
-    printf("\nLogin Failed! Wrong User ID or Password.\n");
+    print_error("Login Failed! Wrong User ID or Password.");
 
     return 0;
 }
@@ -100,7 +105,7 @@ void createDefaultAdminIfNeeded()
         fp = fopen(USERS_FILE, "wb");
         if (fp == NULL)
         {
-            printf("Error: Cannot create users file!\n");
+            print_error("Cannot create users file!");
             return;
         }
 
@@ -114,7 +119,7 @@ void createDefaultAdminIfNeeded()
         fwrite(&u, sizeof(User), 1, fp);
         fclose(fp);
 
-        printf("\n[Default Admin Created: ID=1001, PASS=admin123]\n");
+        print_info("Default Admin Created: ID=1001, PASS=admin123");
         return;
     }
 
@@ -136,7 +141,7 @@ void createDefaultAdminIfNeeded()
         fp = fopen(USERS_FILE, "ab");
         if (fp == NULL)
         {
-            printf("Error: Cannot open users file!\n");
+            print_error("Cannot open users file!");
             return;
         }
 
@@ -150,6 +155,6 @@ void createDefaultAdminIfNeeded()
         fwrite(&u, sizeof(User), 1, fp);
         fclose(fp);
 
-        printf("\n[Default Admin Created: ID=1001, PASS=admin123]\n");
+        print_info("Default Admin Created: ID=1001, PASS=admin123");
     }
 }

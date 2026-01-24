@@ -26,5 +26,7 @@ void vehicleMenu();
 void addVehicle();
 void viewVehicles();
 void searchVehicle();
+void updateVehicle();
+void deleteVehicle();
 
 #endif

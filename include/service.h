@@ -23,5 +23,6 @@ void addService();
 void viewServices();
 void searchServiceByVehicle();
 void updateServiceStatus();
+void deleteService();
 
 #endif

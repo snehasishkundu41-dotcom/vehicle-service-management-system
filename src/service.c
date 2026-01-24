@@ -3,6 +3,7 @@
 #include<string.h>
 
 #include "../include/service.h"
+#include "../include/ui.h"
 
 #define SERVICE_FILE "data/services.dat"
 
@@ -11,23 +12,23 @@
 void addService(){
     Service s;
     FILE *fp;
-    printf("\n-------------------Add Service----------------------\n");
+    print_header("ADD NEW SERVICE RECORD");
 
     // taking input
 
-    printf("Enter Service ID: ");
+    print_input_prompt("Enter Service ID: ");
     scanf("%d",&s.serviceId);
-    printf("Enter vehicle NO: ");
+    print_input_prompt("Enter vehicle NO: ");
     scanf(" %19s",s.vehicleNo);
-    printf("Enter Service Description: ");
+    print_input_prompt("Enter Service Description: ");
     scanf(" %39[^\n]",s.description);
-    printf("Enter Service Cost: ");
+    print_input_prompt("Enter Service Cost: ");
     scanf("%d",&s.cost);
     strcpy(s.status,"Pending");
 
     fp = fopen(SERVICE_FILE,"ab");
     if(fp == NULL){
-        printf("Unable to open service file");
+        print_error("Unable to open service file");
         return;
     }
     
@@ -36,7 +37,7 @@ void addService(){
     fwrite(&s,sizeof(Service),1,fp);
     fclose(fp);
 
-    printf("Service record added successfuly!\n");
+    print_success("Service record added successfuly!");
 }
 // Now writing function to view services 
 void viewServices(){
@@ -46,22 +47,29 @@ void viewServices(){
     fp = fopen(SERVICE_FILE,"rb");
 
     if(fp == NULL){
-        printf("Error:No Service Records found\n");
+        print_error("No Service Records found");
         return;
     }
 
+    print_header("SERVICE RECORDS");
+
     while(fread(&s,sizeof(Service),1,fp)){
-        printf("\n==================================\n");
-        printf("Service ID: %d\n",s.serviceId);
-        printf("Vehicle No: %s\n",s.vehicleNo);
-        printf("Description: %s\n",s.description);
-        printf("Cost: %d\n",s.cost);
-        printf("Status: %s\n",s.status);
-        printf("====================================\n");
+        printf("\n");
+        print_divider();
+        printf(" Service ID   : %d\n",s.serviceId);
+        printf(" Vehicle No   : %s\n",s.vehicleNo);
+        printf(" Description  : %s\n",s.description);
+        printf(" Cost         : %d\n",s.cost);
+        if(strcmp(s.status, "Pending") == 0) {
+            printf(" Status       : %s%s%s\n", COLOR_YELLOW, s.status, COLOR_RESET);
+        } else {
+            printf(" Status       : %s%s%s\n", COLOR_GREEN, s.status, COLOR_RESET);
+        }
+        print_divider();
     }
 
     fclose(fp);
-
+    wait_for_enter();
 
 }
 
@@ -73,34 +81,37 @@ void searchServiceByVehicle(){
     int found = 0;
     char searchedNo[VEHICLE_NO_LEN];
 
-    printf("Enter Vehicle No: ");
+    print_subheader("SEARCH SERVICE HISTORY");
+    print_input_prompt("Enter Vehicle No: ");
     scanf(" %19s",searchedNo);
 
     fp = fopen(SERVICE_FILE,"rb");
 
     if(fp == NULL){
-        printf("No service records exist");
+        print_error("No service records exist");
         return;
     }
 
     while(fread(&s,sizeof(Service),1,fp)){
         if(strcmp(searchedNo,s.vehicleNo)==0){
             found = 1;
-        printf("\n==================================\n");
-        printf("Service ID: %d\n",s.serviceId);
-        printf("Description: %s\n",s.description);
-        printf("Cost: %d\n",s.cost);
-        printf("Status: %s\n",s.status);
-        printf("====================================\n");
+        printf("\n");
+        print_divider();
+        printf(" Service ID   : %d\n",s.serviceId);
+        printf(" Description  : %s\n",s.description);
+        printf(" Cost         : %d\n",s.cost);
+        printf(" Status       : %s\n",s.status);
+        print_divider();
 
         }
     }
 
     if(found == 0){
-        printf("No service record is found with your given number\n");
+        print_error("No service record is found with your given number");
     }
 
     fclose(fp);
+    wait_for_enter();
 }
 
 // writing function to update service status
@@ -111,13 +122,14 @@ void updateServiceStatus(){
     int serviceIDToUpdate;
     int found = 0;
 
-    printf("Enter Service ID to update status: ");
+    print_subheader("UPDATE SERVICE STATUS");
+    print_input_prompt("Enter Service ID to update status: ");
     scanf("%d",&serviceIDToUpdate);
 
     fp = fopen(SERVICE_FILE,"rb+");
 
     if(fp == NULL){
-        printf("No service records found\n");
+        print_error("No service records found");
         return;
     }
 
@@ -132,13 +144,59 @@ void updateServiceStatus(){
         }
     }
     if(found){
-        printf("Service Status updated successfully!\n");
+        print_success("Service Status updated successfully!");
     }
     else{
-        printf("Service ID not found\n");
+        print_error("Service ID not found");
     }
 
     fclose(fp);
+}
+
+// Function to delete a service record
+void deleteService() {
+    Service s;
+    FILE *fp, *tempFp;
+    int found = 0;
+    int deleteId;
+
+    print_subheader("DELETE SERVICE RECORD");
+    print_input_prompt("Enter Service ID to delete: ");
+    scanf("%d", &deleteId);
+
+    fp = fopen(SERVICE_FILE, "rb");
+    if (fp == NULL) {
+        print_error("Unable to open service file!");
+        return;
+    }
+
+    tempFp = fopen("data/temp_services.dat", "wb");
+    if (tempFp == NULL) {
+        fclose(fp);
+        print_error("Unable to create temporary file!");
+        return;
+    }
+
+    while(fread(&s, sizeof(Service), 1, fp)) {
+        if(s.serviceId == deleteId) {
+            found = 1;
+        } else {
+            fwrite(&s, sizeof(Service), 1, tempFp);
+        }
+    }
+
+    fclose(fp);
+    fclose(tempFp);
+
+    if(found) {
+        remove(SERVICE_FILE);
+        rename("data/temp_services.dat", SERVICE_FILE);
+        print_success("Service record deleted successfully!");
+    } else {
+        remove("data/temp_services.dat");
+        print_error("Service ID not found!");
+    }
+    wait_for_enter();
 }
 
 
@@ -150,15 +208,17 @@ void serviceMenu(){
     int choice;
 
     while(1){
-        printf("\n----------------Service Management Menu-----------------\n");
-        printf("1.Add Service Record\n");
-        printf("2.View Service Records\n");
-        printf("3.Search Service by Vehicle No\n");
-        printf("4.Update Service Status\n");
-        printf("5.Return to Main Menu\n");
+        print_header("SERVICE MANAGEMENT");
+        
+        print_menu_item(1, "Add Service Record");
+        print_menu_item(2, "View Service Records");
+        print_menu_item(3, "Search Service by Vehicle No");
+        print_menu_item(4, "Update Service Status");
+        print_menu_item(5, "Delete Service Record");
+        print_menu_item(6, "Return to Main Menu");
 
-        printf("------------------------------------------------------------\n");
-        printf("Enter your choice: ");
+        printf("\n");
+        print_input_prompt("Enter your choice: ");
         scanf("%d",&choice);
 
         switch(choice){
@@ -179,10 +239,14 @@ void serviceMenu(){
             break;
 
             case 5:
+            deleteService();
+            break;
+
+            case 6:
             return; // goes back to main menu
 
             default:
-            printf("Invalid choice. Try again.\n");
+            print_error("Invalid choice. Try again.");
         }
     }
 

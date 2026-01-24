@@ -6,3 +6,11 @@
 
 # VS Code settings
 .vscode/
+
+# Ignore Data Files
+data/*.dat
+*.dat
+
+# Ignore Executables
+*.exe
+*.o
