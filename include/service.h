@@ -1,33 +1,27 @@
 #ifndef SERVICE_H
 #define SERVICE_H
 
-#define MAX_SERVICES 100
+// lengths
 #define VEHICLE_NO_LEN 20
-#define DATE_LEN 15
-#define DESC_LEN 100
+#define SERVICE_DESC_LEN 50
+#define SERVICE_STATUS_LEN 15
 
-// Service status enum
-typedef enum {
-    PENDING,
-    COMPLETED
-} ServiceStatus;
-
-// Service record structure
+// Service structure
 typedef struct {
     int serviceId;
     char vehicleNo[VEHICLE_NO_LEN];
-    char serviceDate[DATE_LEN];
-    char description[DESC_LEN];
-    ServiceStatus status;
-} ServiceRecord;
+    char description[SERVICE_DESC_LEN];
+    int cost;
+    char status[SERVICE_STATUS_LEN];
+} Service;
 
-// Function declarations
-void initServiceModule();
+// Service management menu
+void serviceMenu();
 
-int addServiceRecord(const char *vehicleNo, const char *date, const char *description);
-void viewAllServiceRecords();
-void searchServiceByVehicle(const char *vehicleNo);
-int updateServiceStatus(int serviceId, ServiceStatus status);
-int deleteServiceRecord(int serviceId);
+// CRUD operations
+void addService();
+void viewServices();
+void searchServiceByVehicle();
+void updateServiceStatus();
 
 #endif

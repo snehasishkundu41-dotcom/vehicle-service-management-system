@@ -60,14 +60,107 @@ void addVehicle(){
         }
 
         while(fread(&v,sizeof(Vehicle),1,fp)){
+            printf("\n==================================\n");
             printf("Vehicle No: %s\n", v.vehicleNo);
             printf("Name of the owner: %s\n",v.ownerName);
             printf("Phone Number: %s\n",v.phone);
             printf("Vehicle Model: %s\n",v.model);
             printf("Vehicle Type: %s\n",v.type);
             printf("Year: %d\n",v.year);
+            printf("====================================\n");
         }
 
         fclose(fp);
-    
     }
+        // Now for searching vehicles
+        
+    void searchVehicle(){
+        Vehicle v;
+        int found = 0;
+        char searchedNo[VEHICLE_NO_LEN];
+        FILE *fp;
+        printf("--------------Search Vehicles--------------\n");
+        printf("Enter Vehicle No: \n");
+        scanf(" %19s",searchedNo);
+
+        
+        fp = fopen(VEHICLE_FILE,"rb");
+
+
+        if(fp == NULL){
+            printf("No vehicle records exist");
+            return;
+        }
+        while(fread(&v,sizeof(Vehicle),1,fp)){
+            if(strcmp(searchedNo,v.vehicleNo)==0){
+                found = 1;
+                printf("Name of the owner: %s\n",v.ownerName);
+                printf("Phone Number: %s\n",v.phone);
+                printf("Vehicle Model: %s\n",v.model);
+                printf("Vehicle Type: %s\n",v.type);
+                printf("Year: %d\n",v.year);
+
+                break;
+        }
+         
+    
+     }
+
+                if(found == 0){
+                printf("Error: Vehicle not found\n");
+                }
+
+                fclose(fp);
+ }
+
+
+//  Now we gonna write the function for vehicle management menu
+
+
+    void vehicleMenu(){
+        int choice;
+        
+
+        while(1){
+
+
+            printf("\n----------------Vehicle Management Menu-----------------\n");
+
+            printf("1.Add Vehicles\n");
+            printf("2.View Vehicles\n");
+            printf("3.Search Vehicles\n");
+            printf("4.Return to Main Menu\n");
+
+            printf("------------------------------------------------------------\n");
+            printf("Enter your choice: ");
+            scanf("%d",&choice);
+
+
+            switch(choice){
+                case 1:
+                addVehicle();
+                break;
+                
+                case 2:
+                viewVehicles();
+                break;
+
+                case 3:
+                searchVehicle();
+                break;
+
+                case 4:
+                return;
+
+                default:
+                printf("\nInvalid Choice.Choose again!\n");
+                break;
+
+            }
+
+        }
+    }
+
+
+    
+    

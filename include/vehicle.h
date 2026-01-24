@@ -19,7 +19,7 @@ typedef struct{
 
 // Vehicle module main menu
 
-void vehiclemenu();
+void vehicleMenu();
 
 // CRUD operations
 
@@ -27,4 +27,4 @@ void addVehicle();
 void viewVehicles();
 void searchVehicle();
 
-#endif;
+#endif

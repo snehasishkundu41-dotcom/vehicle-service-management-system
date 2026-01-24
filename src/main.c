@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/auth.h"
+#include "../include/vehicle.h"
+#include "../include/service.h"
 
 void welcome_screen()
 {
@@ -41,12 +43,13 @@ void adminMenu(){
 
     switch(choice){
         case 1:
-        printf("\n[Vehicle module coming next]\n");
+        vehicleMenu();
         break;
 
         case 2:
-        printf("\n[Service module coming next]\n");
+        serviceMenu();
         break;
+
         case 3:
         printf("\nLogging out...\n");
         return; // goes back to main menu
@@ -72,11 +75,11 @@ void userMenu(){
 
         switch(choice){
             case 1:
-            printf("\n[View service history coming next]\n");
+            searchServiceByVehicle();
             break;
 
             case 2:
-            printf("\n[Search vehicle coming next]\n");
+            searchVehicle();
             break;
 
 
