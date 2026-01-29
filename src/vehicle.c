@@ -143,10 +143,7 @@ void updateVehicle() {
             found = 1;
             print_info("Vehicle found! Enter new details.");
             
-            // Skip updating Vehicle No (Primary Key effectively)
-            // Or allow it? Usually safer not to change ID, but here VehicleNo is the ID.
-            // Let's keep VehicleNo same to avoid confusion, or allow change if user wants.
-            // Requirement says "update vehicle", implies details.
+            
             
             print_input_prompt("Enter New Owner Name: ");
             scanf(" %39[^\n]", v.ownerName);
